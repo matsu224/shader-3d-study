@@ -1,4 +1,4 @@
-Shader "Custom/00_Unlit"
+Shader "Custom/01_Normal"
 {
     Properties
     {
@@ -8,10 +8,18 @@ Shader "Custom/00_Unlit"
 
     SubShader
     {
-        Tags { "RenderType" = "Opaque" "RenderPipeline" = "UniversalPipeline" }
+        Tags
+        {
+            "RenderType" = "Opaque"
+            "Queue" = "Geometry"
+            "RenderPipeline" = "UniversalPipeline"
+        }
 
         Pass
         {
+            Name "Forward"
+            Tags { "LightMode" = "UniversalForwardOnly" }
+
             HLSLPROGRAM
 
             #pragma vertex vert
@@ -55,4 +63,6 @@ Shader "Custom/00_Unlit"
             ENDHLSL
         }
     }
+
+    Fallback Off
 }
