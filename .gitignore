@@ -1,0 +1,24 @@
+# Track only the selected project files at the repository root.
+/*
+!/.gitignore
+!/README.md
+!/Assets/
+
+# Track only the study assets.
+/Assets/*
+!/Assets/Study/
+
+/Assets/Study/*
+!/Assets/Study/Shaders/
+!/Assets/Study/Materials/
+
+# Track shader files only.
+/Assets/Study/Shaders/*
+!/Assets/Study/Shaders/*.shader
+
+# Track material files only.
+/Assets/Study/Materials/*
+!/Assets/Study/Materials/*.mat
+
+# Ignore macOS metadata anywhere in the tracked directories.
+.DS_Store
