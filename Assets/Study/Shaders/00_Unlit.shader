@@ -31,12 +31,17 @@ Shader "Custom/00_Unlit"
             {
                 float4 positionOS : POSITION;
                 float2 uv : TEXCOORD0;
+                float3 normalOS : NORMAL;
             };
 
             struct Varyings
             {
                 float4 positionHCS : SV_POSITION;
                 float2 uv : TEXCOORD0;
+                float3 positionWS : TEXCOORD1;
+                float3 normalWS : TEXCOORD2;
+                float4 positionOS : TEXCOORD3;
+                float3 normalOS : TEXCOORD4;
             };
 
             TEXTURE2D(_BaseMap);
@@ -50,15 +55,23 @@ Shader "Custom/00_Unlit"
             Varyings vert(Attributes IN)
             {
                 Varyings OUT;
-                OUT.positionHCS = TransformObjectToHClip(IN.positionOS.xyz);
                 OUT.uv = TRANSFORM_TEX(IN.uv, _BaseMap);
+                OUT.positionHCS = TransformObjectToHClip(IN.positionOS.xyz);
+                OUT.positionWS = TransformObjectToWorld(IN.positionOS.xyz);
+                OUT.normalWS = TransformObjectToWorldNormal(IN.normalOS);
+                OUT.positionOS = IN.positionOS;
+                OUT.normalOS = IN.normalOS;
                 return OUT;
             }
 
             half4 frag(Varyings IN) : SV_Target
             {
-                half4 color = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, IN.uv) * _BaseColor;
-                return color;
+                float3 color = IN.positionOS.xyz + 0.5;
+                float3 N = normalize(IN.normalOS);
+                //float3 Ncolor = N * 0.5 + 0.5;
+
+                return half4(color, 1.0);
+                //return half4(Ncolor, 1.0);
             }
             ENDHLSL
         }
