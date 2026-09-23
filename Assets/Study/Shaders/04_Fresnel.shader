@@ -4,6 +4,8 @@ Shader "Custom/04_Fresnel"
     {
         [MainColor] _BaseColor("Base Color", Color) = (1, 1, 1, 1)
         [MainTexture] _BaseMap("Base Map", 2D) = "white" {}
+        _FresnelColor("Fresnel Color", Color) = (1, 1, 1, 1)
+        _FresnelPower("Fresnel Power", Range(0.0, 8.0)) = 5.0
     }
 
     SubShader
@@ -26,17 +28,23 @@ Shader "Custom/04_Fresnel"
             #pragma fragment frag
 
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 
             struct Attributes
             {
                 float4 positionOS : POSITION;
                 float2 uv : TEXCOORD0;
+                float3 normalOS : NORMAL;
             };
 
             struct Varyings
             {
                 float4 positionHCS : SV_POSITION;
                 float2 uv : TEXCOORD0;
+                float3 positionWS : TEXCOORD1;
+                float3 normalWS : TEXCOORD2;
+                float4 positionOS : TEXCOORD3;
+                float3 normalOS : TEXCOORD4;
             };
 
             TEXTURE2D(_BaseMap);
@@ -45,20 +53,32 @@ Shader "Custom/04_Fresnel"
             CBUFFER_START(UnityPerMaterial)
                 half4 _BaseColor;
                 float4 _BaseMap_ST;
+                half4 _FresnelColor;
+                float _FresnelPower;
             CBUFFER_END
 
             Varyings vert(Attributes IN)
             {
                 Varyings OUT;
-                OUT.positionHCS = TransformObjectToHClip(IN.positionOS.xyz);
                 OUT.uv = TRANSFORM_TEX(IN.uv, _BaseMap);
+                OUT.positionHCS = TransformObjectToHClip(IN.positionOS.xyz);
+                OUT.positionWS = TransformObjectToWorld(IN.positionOS.xyz);
+                OUT.normalWS = TransformObjectToWorldNormal(IN.normalOS);
+                OUT.positionOS = IN.positionOS;
+                OUT.normalOS = IN.normalOS;
                 return OUT;
             }
 
             half4 frag(Varyings IN) : SV_Target
             {
-                half4 color = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, IN.uv) * _BaseColor;
-                return color;
+                float3 N = normalize(IN.normalWS);
+                float3 V = normalize(_WorldSpaceCameraPos - IN.positionWS);
+                float ndotv = dot(N, V);
+                float fresnel = 1.0 - saturate(ndotv);
+                fresnel = pow(fresnel, _FresnelPower);
+                float3 color = _FresnelColor.rgb * fresnel;
+
+                return float4(color, 1.0);
             }
             ENDHLSL
         }
