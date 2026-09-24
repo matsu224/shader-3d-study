@@ -166,3 +166,4 @@ Tangent、Bitangent、Normalから構成されるTBN basisを利用し、Tangent
 
 ## メモ
 ここまでやったら「GLSLへの変換」「C++との接続・使い方」「デバッグ方法」も実行&確認する！
+その後Toonに輪郭線を追加する？
