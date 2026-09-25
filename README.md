@@ -162,7 +162,7 @@ float3 normalTS = normalTex.rgb * 2.0 - 1.0;
 
 Tangent、Bitangent、Normalから構成されるTBN basisを利用し、Tangent SpaceのNormalをLightingに利用できる座標空間へ変換する。
 
-
+> **注意:** この章では、AIが生成したコードを読み解き、理解する方針で学習を進めた。
 
 ## メモ
 ここまでやったら「GLSLへの変換」「C++との接続・使い方」「デバッグ方法」も実行&確認する！
