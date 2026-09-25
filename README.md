@@ -164,6 +164,81 @@ Tangent、Bitangent、Normalから構成されるTBN basisを利用し、Tangent
 
 > **注意:** この章では、AIが生成したコードを読み解き、理解する方針で学習を進めた。
 
-## メモ
-ここまでやったら「GLSLへの変換」「C++との接続・使い方」「デバッグ方法」も実行&確認する！
-その後Toonに輪郭線を追加する？
+## 残りの学習予定
+
+Unity URP上での3Dシェーダ基礎実装は一通り完了したため、
+残りは本番で使用するC++ + GLSLへの橋渡しを中心に確認する。
+
+### GLSL
+
+Unity/HLSLで実装したシェーダのうち代表的なものを、
+AIを用いて素GLSLへ変換し、コードを読みながら対応関係を確認する。
+
+主な確認対象:
+
+- Vertex / Fragment Shaderの `in` / `out`
+- `gl_Position`
+- Model / View / Projection変換
+- Lambert (`dot(N, L)`)
+- Toon (`step` / `smoothstep`)
+- Normal Mapping / TBN
+- `texture()` によるTexture Sampling
+
+GLSLを暗記して一から書くことより、
+HLSLとの対応や必要な入力・座標空間・計算内容を説明できることを優先する。
+
+### C++との接続
+
+シェーダそのものに関係するC++側の処理を確認する。
+
+- GLSLファイルの読み込み
+- Vertex / Fragment ShaderのCompile
+- Shader ProgramのLink
+- Uniformの設定
+- Vertex Attributeの入力
+- TextureのBind
+- Draw Callまでの流れ
+
+一般的なC++文法やpointer / reference / lifetimeについては別途復習し、
+このリポジトリにはシェーダとの接続に直接関係するコードのみ置く。
+
+### デバッグ
+
+C++コードをDebuggerで実行し、以下を確認する。
+
+- Breakpoint
+- Step Over / Step Into
+- Continue
+- Locals
+- Watch
+- Call Stack
+
+また、シェーダ側では途中計算結果を色として出力する方法を引き続き使用する。
+
+### Post Effect / Shadow
+
+GLSLで簡単なPost Effectを確認する。
+
+- Grayscale
+- Vignette
+- Chromatic Aberration
+- Neighbor Sampling
+
+Shadow Mappingは実装を必須とせず、
+
+1. Light視点からDepthを生成
+2. Camera視点の位置をLight Spaceへ変換
+3. 保存されたDepthと比較
+4. Shadow判定
+
+という原理を理解する。
+
+### 余裕があれば
+
+Toon Shaderに輪郭線を追加し、
+
+- Vertex extrusion
+- Cull Front
+- Multi Pass
+
+を確認する。

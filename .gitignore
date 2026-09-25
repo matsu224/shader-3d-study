@@ -3,6 +3,7 @@
 !/.gitignore
 !/README.md
 !/Assets/
+!/Extras/
 
 # Track only the study assets.
 /Assets/*
@@ -19,6 +20,11 @@
 # Track material files only.
 /Assets/Study/Materials/*
 !/Assets/Study/Materials/*.mat
+
+# Track study extras.
+/Extras/*
+!/Extras/GLSL/
+!/Extras/CppShader/
 
 # Ignore macOS metadata anywhere in the tracked directories.
 .DS_Store
