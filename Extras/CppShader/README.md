@@ -58,3 +58,16 @@ cmake -S Extras/CppShader/02_Lambert -B build/cpp-shader/02-lambert
 cmake --build build/cpp-shader/02-lambert
 ./build/cpp-shader/02-lambert/cpp_shader_lambert
 ```
+
+## VS CodeでDebug
+
+ローカルの`.vscode/settings.json`では、CMake Toolsの対象を`02_Lambert`、build先を通常buildと分けた`build/cpp-shader/02-lambert-debug`、build typeを`Debug`に設定しています。上記の通常buildと互いに上書きしません。
+
+MicrosoftのCMake ToolsとC/C++拡張を使用し、次の流れで実行します。
+
+1. CMakeパネルで`cpp_shader_lambert`を対象にする
+2. C++の行番号左側をクリックしてBreakpointを置く
+3. CMakeパネルの`Debug`にある「三角＋虫」ボタンで起動する
+4. 停止後、変数表示やWatchで値を確認し、Step Over / Step Into / Continueを使う
+
+`00_Basic`をDebugする場合は、`.vscode/settings.json`の`cmake.sourceDirectory`を`Extras/CppShader/00_Basic`、`cmake.buildDirectory`を`build/cpp-shader/00-basic-debug`へ切り替え、CMake ToolsでConfigureします。

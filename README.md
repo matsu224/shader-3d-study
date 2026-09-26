@@ -172,20 +172,7 @@ Tangent、Bitangent、Normalから構成されるTBN basisを利用し、Tangent
 
 ## 残りの学習予定
 
-Unity URP上での3Dシェーダ基礎実装と、C++からGLSLをcompile/linkして描画する基本的な接続確認は完了した。残りはデバッグとPost Effect / Shadowの確認を行う。
-
-### デバッグ
-
-C++コードをDebuggerで実行し、以下を確認する。
-
-- Breakpoint
-- Step Over / Step Into
-- Continue
-- Locals
-- Watch
-- Call Stack
-
-また、シェーダ側では途中計算結果を色として出力する方法を引き続き使用する。
+Unity URP上での3Dシェーダ基礎実装、C++からGLSLをcompile/linkして描画する基本的な接続、Debuggerの基本操作は完了した。残りはPost Effect / Shadowの確認を行う。
 
 ### Post Effect / Shadow
 
