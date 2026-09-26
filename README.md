@@ -162,31 +162,17 @@ float3 normalTS = normalTex.rgb * 2.0 - 1.0;
 
 Tangent、Bitangent、Normalから構成されるTBN basisを利用し、Tangent SpaceのNormalをLightingに利用できる座標空間へ変換する。
 
-> **注意:** この章では、AIが生成したコードを読み解き、理解する方針で学習を進めた。
-
 ## Extras/GLSL
 
 [Extras/GLSL](Extras/GLSL) には、Unity/HLSLで実装したシェーダをAIで素GLSLに変換した比較学習用コードを置いている。GLSLを一から実装するためではなく、HLSLとの対応や入出力、座標空間、計算内容を読み解くための参考資料として使用した。
 
+## Extras/CppShader
+
+[Extras/CppShader](Extras/CppShader) には、GLSLをC++から読み込み、compile、link、描画へ接続する流れを段階的に確認するため、AIが生成した学習用コードを置いている。C++やOpenGLを一から実装するためではなく、生成されたコードを読み解き、C++とGLSLの接続方法を理解するために使用する。`00_Basic`と`02_Lambert`を独立したサンプルとして保存し、Lambertで追加されるlight directionとbase colorの接続を比較できるようにしている。実行方法などの詳細は[CppShader README](Extras/CppShader/README.md)を参照。
+
 ## 残りの学習予定
 
-Unity URP上での3Dシェーダ基礎実装は一通り完了したため、
-残りは本番で使用するC++ + GLSLへの橋渡しを中心に確認する。
-
-### C++との接続
-
-シェーダそのものに関係するC++側の処理を確認する。
-
-- GLSLファイルの読み込み
-- Vertex / Fragment ShaderのCompile
-- Shader ProgramのLink
-- Uniformの設定
-- Vertex Attributeの入力
-- TextureのBind
-- Draw Callまでの流れ
-
-一般的なC++文法やpointer / reference / lifetimeについては別途復習し、
-このリポジトリにはシェーダとの接続に直接関係するコードのみ置く。
+Unity URP上での3Dシェーダ基礎実装と、C++からGLSLをcompile/linkして描画する基本的な接続確認は完了した。残りはデバッグとPost Effect / Shadowの確認を行う。
 
 ### デバッグ
 
