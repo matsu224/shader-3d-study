@@ -82,8 +82,11 @@ Shader "Custom/07_NormalMap"
                         TransformObjectToWorldDir(IN.tangentOS.xyz)
                     );
 
+                // GLSL: determinant(mat3(model)) < 0.0 ? -1.0 : 1.0
+                float modelSign = GetOddNegativeScale();
+
                 float tangentSign =
-                    IN.tangentOS.w * GetOddNegativeScale();
+                    IN.tangentOS.w * modelSign;
 
                 float3 B =
                     normalize(cross(N, T)) * tangentSign;

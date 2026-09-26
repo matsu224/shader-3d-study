@@ -164,28 +164,14 @@ Tangent、Bitangent、Normalから構成されるTBN basisを利用し、Tangent
 
 > **注意:** この章では、AIが生成したコードを読み解き、理解する方針で学習を進めた。
 
+## Extras/GLSL
+
+[Extras/GLSL](Extras/GLSL) には、Unity/HLSLで実装したシェーダをAIで素GLSLに変換した比較学習用コードを置いている。GLSLを一から実装するためではなく、HLSLとの対応や入出力、座標空間、計算内容を読み解くための参考資料として使用した。
+
 ## 残りの学習予定
 
 Unity URP上での3Dシェーダ基礎実装は一通り完了したため、
 残りは本番で使用するC++ + GLSLへの橋渡しを中心に確認する。
-
-### GLSL
-
-Unity/HLSLで実装したシェーダのうち代表的なものを、
-AIを用いて素GLSLへ変換し、コードを読みながら対応関係を確認する。
-
-主な確認対象:
-
-- Vertex / Fragment Shaderの `in` / `out`
-- `gl_Position`
-- Model / View / Projection変換
-- Lambert (`dot(N, L)`)
-- Toon (`step` / `smoothstep`)
-- Normal Mapping / TBN
-- `texture()` によるTexture Sampling
-
-GLSLを暗記して一から書くことより、
-HLSLとの対応や必要な入力・座標空間・計算内容を説明できることを優先する。
 
 ### C++との接続
 
