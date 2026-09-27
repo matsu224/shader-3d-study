@@ -10,6 +10,8 @@ Shader "Custom/05_Toon"
         _DarkColor("Dark Color", Color) = (0.1, 0.1, 0.1, 1)
         _MidColor("Mid Color", Color) = (0.5, 0.5, 0.5, 1)
         _LightColor("Light Color", Color) = (1, 1, 1, 1)
+        _OutlineColor("Outline Color", Color) = (0, 0, 0, 1)
+        _OutlineWidth("Outline Width", Range(0, 0.1)) = 0.01
     }
 
     SubShader
@@ -19,6 +21,72 @@ Shader "Custom/05_Toon"
             "RenderType" = "Opaque"
             "Queue" = "Geometry"
             "RenderPipeline" = "UniversalPipeline"
+        }
+
+        HLSLINCLUDE
+
+        #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+
+        TEXTURE2D(_BaseMap);
+        SAMPLER(sampler_BaseMap);
+
+        CBUFFER_START(UnityPerMaterial)
+            half4 _BaseColor;
+            float4 _BaseMap_ST;
+            float _Threshold1;
+            float _Threshold2;
+            float _Softness;
+            half4 _DarkColor;
+            half4 _MidColor;
+            half4 _LightColor;
+            half4 _OutlineColor;
+            float _OutlineWidth;
+        CBUFFER_END
+
+        ENDHLSL
+
+        Pass
+        {
+            Name "Outline"
+            Tags { "LightMode" = "ToonOutline" }
+
+            Cull Front
+            ZWrite On
+            ZTest LEqual
+
+            HLSLPROGRAM
+
+            #pragma vertex outlineVert
+            #pragma fragment outlineFrag
+
+            struct OutlineAttributes
+            {
+                float4 positionOS : POSITION;
+                float3 normalOS : NORMAL;
+            };
+
+            struct OutlineVaryings
+            {
+                float4 positionHCS : SV_POSITION;
+            };
+
+            OutlineVaryings outlineVert(OutlineAttributes IN)
+            {
+                OutlineVaryings OUT;
+
+                float3 expandedPositionOS =
+                    IN.positionOS.xyz + IN.normalOS * _OutlineWidth;
+
+                OUT.positionHCS = TransformObjectToHClip(expandedPositionOS);
+                return OUT;
+            }
+
+            half4 outlineFrag(OutlineVaryings IN) : SV_Target
+            {
+                return _OutlineColor;
+            }
+
+            ENDHLSL
         }
 
         Pass
@@ -31,7 +99,6 @@ Shader "Custom/05_Toon"
             #pragma vertex vert
             #pragma fragment frag
 
-            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 
             struct Attributes
@@ -50,20 +117,6 @@ Shader "Custom/05_Toon"
                 float4 positionOS : TEXCOORD3;
                 float3 normalOS : TEXCOORD4;
             };
-
-            TEXTURE2D(_BaseMap);
-            SAMPLER(sampler_BaseMap);
-
-            CBUFFER_START(UnityPerMaterial)
-                half4 _BaseColor;
-                float4 _BaseMap_ST;
-                float _Threshold1;
-                float _Threshold2;
-                float _Softness;
-                half4 _DarkColor;
-                half4 _MidColor;
-                half4 _LightColor;
-            CBUFFER_END
 
             Varyings vert(Attributes IN)
             {
