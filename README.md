@@ -229,16 +229,3 @@ Sceneを独自FramebufferのColor Textureへ描画し、そのTextureをFull Scr
 `effectMode`により、Original、Grayscale、Vignette、Chromatic Aberration、Neighbor Samplingを切り替える。Neighbor Samplingでは`textureSize()`から1 texel分のUV幅を求め、中央と上下左右をsampleする。
 
 Buildと実行方法は[CppShader README](Extras/CppShader/README.md)を参照。
-
-## 学習状況
-
-Unity URP上での3Dシェーダ基礎実装、C++からGLSLをcompile／linkして描画する基本的な接続、Debuggerの基本操作、GLSLによるPost Effectの実装まで完了。
-
-### Shadow Mapping（未着手）
-
-Shadow Mappingは実装を必須とせず、次の原理を理解することを今後の学習予定とする。
-
-1. Light視点からDepthを生成
-2. Camera視点の位置をLight Spaceへ変換
-3. 保存されたDepthと比較
-4. Shadow判定
