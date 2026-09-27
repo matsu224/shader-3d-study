@@ -11,6 +11,8 @@ layout(location = 0) out vec3 normalWS;
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
+uniform int outlinePass;
+uniform float outlineWidth;
 
 void main()
 {
@@ -18,6 +20,13 @@ void main()
     mat3 normalMatrix = transpose(inverse(mat3(model)));
     normalWS = normalMatrix * normalOS;
 
-    // HLSL: TransformObjectToHClip(positionOS)
-    gl_Position = projection * view * model * vec4(positionOS, 1.0);
+    // Outline passだけ、Unity版と同じくObject Spaceのnormal方向へ頂点を押し出す。
+    vec3 expandedPositionOS = positionOS;
+    if (outlinePass != 0)
+    {
+        expandedPositionOS += normalOS * outlineWidth;
+    }
+
+    // HLSL: TransformObjectToHClip(expandedPositionOS)
+    gl_Position = projection * view * model * vec4(expandedPositionOS, 1.0);
 }

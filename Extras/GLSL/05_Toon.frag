@@ -11,9 +11,18 @@ uniform float softness;
 uniform vec3 darkColor;
 uniform vec3 midColor;
 uniform vec3 lightColor;
+uniform int outlinePass;
+uniform vec3 outlineColor;
 
 void main()
 {
+    // Unity版のOutline Fragment Shaderと同じく、Outline passは固定色を返す。
+    if (outlinePass != 0)
+    {
+        fragColor = vec4(outlineColor, 1.0);
+        return;
+    }
+
     // N and L are both in World Space.
     vec3 N = normalize(normalWS);
     vec3 L = normalize(lightDirWS);
