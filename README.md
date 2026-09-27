@@ -15,7 +15,7 @@ Unity URPを用いた3Dシェーダの学習用リポジトリです。
 - Lambert diffuse
 - Blinn-Phong specular
 - Fresnel
-- Toon shading
+- Toon shading / outline
 - Vertex deformation
 - Normal mapping
 
@@ -115,14 +115,15 @@ float fresnel = 1.0 - saturate(dot(N, V));
 - マテリアル：
   - [M_05_Toon.mat](Assets/Study/Materials/M_05_Toon.mat)
 
-Lambert Diffuseの連続的な明るさを離散化してToon Shadingを実装。
+Lambert Diffuseを複数の閾値で区切ったToon Shadingと、頂点押し出しによるOutlineを実装。
 
 ```hlsl
 float ndotl = saturate(dot(N, L));
-float toon = step(0.5, ndotl);
+float toon1 = smoothstep(_Threshold1 - _Softness, _Threshold1 + _Softness, ndotl);
+float toon2 = smoothstep(_Threshold2 - _Softness, _Threshold2 + _Softness, ndotl);
 ```
 
-2階調・複数階調の陰影に加え、Fresnelを利用したRimやToon Specularも確認する。
+Outline Passでは頂点をObject SpaceのNormal方向へ押し出し、`Cull Front`で裏面だけを描画する。通常サイズのToon Passを重ねることで、外側にはみ出した部分を輪郭として表示する。
 
 ---
 
@@ -164,11 +165,20 @@ Tangent、Bitangent、Normalから構成されるTBN basisを利用し、Tangent
 
 ## Extras/GLSL
 
-[Extras/GLSL](Extras/GLSL) には、Unity/HLSLで実装したシェーダをAIで素GLSLに変換した比較学習用コードを置いている。GLSLを一から実装するためではなく、HLSLとの対応や入出力、座標空間、計算内容を読み解くための参考資料として使用した。
+[Extras/GLSL](Extras/GLSL) には、Unity/HLSLで実装したシェーダをAIで素GLSLに変換した比較学習用コードを置いている。GLSLを一から実装するためではなく、HLSLとの対応や入出力、座標空間、計算内容を読み解くための参考資料として使用する。
 
 ## Extras/CppShader
 
-[Extras/CppShader](Extras/CppShader) には、GLSLをC++から読み込み、compile、link、描画へ接続する流れを段階的に確認するため、AIが生成した学習用コードを置いている。C++やOpenGLを一から実装するためではなく、生成されたコードを読み解き、C++とGLSLの接続方法を理解するために使用する。`00_Basic`と`02_Lambert`を独立したサンプルとして保存し、Lambertで追加されるlight directionとbase colorの接続を比較できるようにしている。実行方法などの詳細は[CppShader README](Extras/CppShader/README.md)を参照。
+[Extras/CppShader](Extras/CppShader) には、GLSLをC++から読み込み、compile、link、描画へ接続する流れを段階的に確認するため、AIが生成した学習用コードを置いている。C++やOpenGLを一から実装するためではなく、生成されたコードを読み解き、C++とGLSLの接続方法を理解するために使用する。
+
+現在は次の独立したサンプルを用意している。
+
+- `00_Basic`：attribute、matrix、Normalの可視化
+- `02_Lambert`：Light DirectionとBase Colorのuniform接続
+- `05_Toon`：Vertex extrusion、Face Culling、2回の描画によるOutline
+- `07_NormalMap`：PNG読込、Texture接続、TBNによるNormal Mapping
+
+Buildと実行方法は[CppShader README](Extras/CppShader/README.md)を参照。
 
 ## 残りの学習予定
 
@@ -191,13 +201,3 @@ Shadow Mappingは実装を必須とせず、
 4. Shadow判定
 
 という原理を理解する。
-
-### 余裕があれば
-
-Toon Shaderに輪郭線を追加し、
-
-- Vertex extrusion
-- Cull Front
-- Multi Pass
-
-を確認する。
