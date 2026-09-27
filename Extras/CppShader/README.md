@@ -44,6 +44,40 @@ Unity URP版のPassはRenderer Featureと`LightMode`で選択しますが、Open
 
 TextureはローカルのUnity Assetを参照し、Git管理には追加しません。
 
+### 08_PostEffect
+
+`Extras/GLSL/08_PostEffectScene.vert`と`08_PostEffectScene.frag`で元のSceneを描き、`08_PostEffect.vert`と`08_PostEffect.frag`でFull Screen QuadへPost Effectを適用します。
+
+描画は次の2 Passです。
+
+```text
+Pass 1: Scene Shader Program
+        ↓
+        独自Framebuffer
+        ├── Color Texture
+        └── Depth Renderbuffer
+
+Pass 2: Color Textureをsample
+        ↓
+        Post Effect Shader Program
+        ↓
+        Full Screen Quad
+        ↓
+        Windowの標準Framebuffer
+```
+
+Post Effect Fragment Shaderは`effectMode`で処理を切り替えます。
+
+| キー / Mode | Effect | Texture Sampling |
+| --- | --- | --- |
+| `0` | Original | 現在のUVを1回sample |
+| `1` | Grayscale | 現在のUVを1回sampleし、RGBを輝度へ変換 |
+| `2` | Vignette | 現在のUVを1回sampleし、画面中央からの距離maskを乗算 |
+| `3` | Chromatic Aberration | 左右へずらしたUVからRGBを3回sample |
+| `4` | Neighbor Sampling | `textureSize()`からtexel幅を求め、中央と上下左右を5回sample |
+
+Neighbor Samplingでは効果を確認しやすくするため、上下左右を4 texel離してsampleし、5色を同じ重みで平均します。WindowのFramebuffer sizeが変わった場合は、Color TextureとDepth Renderbufferの保存領域も同じ解像度へ更新します。
+
 ## 使用環境
 
 | 環境・依存関係 | 役割 |
@@ -95,6 +129,14 @@ cmake --build build/cpp-shader/05-toon
 cmake -S Extras/CppShader/07_NormalMap -B build/cpp-shader/07-normal-map
 cmake --build build/cpp-shader/07-normal-map
 ./build/cpp-shader/07-normal-map/cpp_shader_normal_map
+```
+
+### 08_PostEffect
+
+```sh
+cmake -S Extras/CppShader/08_PostEffect -B build/cpp-shader/08-post-effect
+cmake --build build/cpp-shader/08-post-effect
+./build/cpp-shader/08-post-effect/cpp_shader_post_effect
 ```
 
 ## VS CodeでDebug

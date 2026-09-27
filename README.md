@@ -1,25 +1,26 @@
 # shader-3d-study
 
-Unity URPを用いた3Dシェーダの学習用リポジトリです。
+Unity URPを中心に、GLSLとC++／OpenGLも用いてシェーダを学習するためのリポジトリです。
 
-3D mesh shaderの基本的な処理を、小さなシェーダに分けて実装しています。
+3D mesh shaderの基本的な処理とPost Effectを、小さなシェーダに分けて実装しています。
 
-## 実装結果
+## 学習方法
 
-**動画URL：** TBD
+### Unity / HLSL
 
-以下のシェーダをそれぞれ別のオブジェクト・マテリアルに適用し、1つのUnity Scene上で確認できるようにしています。
+[Assets/Study](Assets/Study) 以下には、Unity URP上でShader／Materialを段階的に実装し、Scene上の表示結果を確認しながら学習した本体を置いています。AI生成コードの読解を主目的とする`Extras`とは異なり、Shaderの処理を自分で組み立てて検証する学習です。
 
-- Unlit
-- Normal visualization
-- Lambert diffuse
-- Blinn-Phong specular
-- Fresnel
-- Toon shading / outline
-- Vertex deformation
-- Normal mapping
+### Extras/GLSL
 
-## 実装したシェーダ
+[Extras/GLSL](Extras/GLSL) には、Unity/HLSLとの対応を比較するため、AIで変換・生成した素のGLSLを置いています。コードを一から実装することより、HLSLとの対応、Shader間の入出力、座標空間、計算内容を読み解くために使用します。
+
+`08_PostEffect`のみ対応するUnity版を持たず、C++／OpenGLから使用するGLSLとして実装しています。
+
+### Extras/CppShader
+
+[Extras/CppShader](Extras/CppShader) には、GLSLの読み込み、compile、link、描画への接続を確認するため、AIが生成したC++／OpenGLコードを置いています。C++やOpenGLを一から実装することより、生成されたコードを読み解き、C++とGLSLの接続方法を理解するために使用します。
+
+## Unity / HLSLで実装したシェーダ
 
 ### 00_Unlit
 
@@ -163,41 +164,81 @@ float3 normalTS = normalTex.rgb * 2.0 - 1.0;
 
 Tangent、Bitangent、Normalから構成されるTBN basisを利用し、Tangent SpaceのNormalをLightingに利用できる座標空間へ変換する。
 
-## Extras/GLSL
+## GLSL / C++・OpenGLで確認したサンプル
 
-[Extras/GLSL](Extras/GLSL) には、Unity/HLSLで実装したシェーダをAIで素GLSLに変換した比較学習用コードを置いている。GLSLを一から実装するためではなく、HLSLとの対応や入出力、座標空間、計算内容を読み解くための参考資料として使用する。
+以下は[Extras/GLSL](Extras/GLSL)のShaderと[Extras/CppShader](Extras/CppShader)の実行コードを組み合わせた、比較・読解用の独立したサンプルです。
 
-## Extras/CppShader
+### 00_Basic
 
-[Extras/CppShader](Extras/CppShader) には、GLSLをC++から読み込み、compile、link、描画へ接続する流れを段階的に確認するため、AIが生成した学習用コードを置いている。C++やOpenGLを一から実装するためではなく、生成されたコードを読み解き、C++とGLSLの接続方法を理解するために使用する。
+- 対応するUnity側のテーマ：`01_Normal`のNormal可視化
+- GLSL：
+  - [00_Basic.vert](Extras/GLSL/00_Basic.vert)
+  - [00_Basic.frag](Extras/GLSL/00_Basic.frag)
+- C++：
+  - [main.cpp](Extras/CppShader/00_Basic/main.cpp)
 
-現在は次の独立したサンプルを用意している。
+Vertex Attribute、Model／View／Projection Matrixの接続と、World Space NormalのRGB表示を確認する。
 
-- `00_Basic`：attribute、matrix、Normalの可視化
-- `02_Lambert`：Light DirectionとBase Colorのuniform接続
-- `05_Toon`：Vertex extrusion、Face Culling、2回の描画によるOutline
-- `07_NormalMap`：PNG読込、Texture接続、TBNによるNormal Mapping
+### 02_Lambert
+
+- 対応するUnity側のテーマ：`02_Lambert`
+- GLSL：
+  - [02_Lambert.vert](Extras/GLSL/02_Lambert.vert)
+  - [02_Lambert.frag](Extras/GLSL/02_Lambert.frag)
+- C++：
+  - [main.cpp](Extras/CppShader/02_Lambert/main.cpp)
+
+Light DirectionとBase Colorをuniformで渡し、World SpaceのNormalとの内積からLambert Diffuseを計算する。
+
+### 05_Toon
+
+- 対応するUnity側のテーマ：`05_Toon`
+- GLSL：
+  - [05_Toon.vert](Extras/GLSL/05_Toon.vert)
+  - [05_Toon.frag](Extras/GLSL/05_Toon.frag)
+- C++：
+  - [main.cpp](Extras/CppShader/05_Toon/main.cpp)
+
+Vertex extrusion、Face Culling、同じShader Programを使った2回の描画によりToon ShadingとOutlineを確認する。
+
+### 07_NormalMap
+
+- 対応するUnity側のテーマ：`07_NormalMap`
+- GLSL：
+  - [07_NormalMap.vert](Extras/GLSL/07_NormalMap.vert)
+  - [07_NormalMap.frag](Extras/GLSL/07_NormalMap.frag)
+- C++：
+  - [main.cpp](Extras/CppShader/07_NormalMap/main.cpp)
+
+PNGの読み込み、Textureとの接続、TBN basisによるTangent Space Normalの変換を確認する。
+
+### 08_PostEffect
+
+- 対応するUnity側のテーマ：なし（Unity側のShader／Materialは未実装）
+- Scene用GLSL：
+  - [08_PostEffectScene.vert](Extras/GLSL/08_PostEffectScene.vert)
+  - [08_PostEffectScene.frag](Extras/GLSL/08_PostEffectScene.frag)
+- Post Effect用GLSL：
+  - [08_PostEffect.vert](Extras/GLSL/08_PostEffect.vert)
+  - [08_PostEffect.frag](Extras/GLSL/08_PostEffect.frag)
+- C++：
+  - [main.cpp](Extras/CppShader/08_PostEffect/main.cpp)
+
+Sceneを独自FramebufferのColor Textureへ描画し、そのTextureをFull Screen Quadから読み直す2 Pass構成。
+
+`effectMode`により、Original、Grayscale、Vignette、Chromatic Aberration、Neighbor Samplingを切り替える。Neighbor Samplingでは`textureSize()`から1 texel分のUV幅を求め、中央と上下左右をsampleする。
 
 Buildと実行方法は[CppShader README](Extras/CppShader/README.md)を参照。
 
-## 残りの学習予定
+## 学習状況
 
-Unity URP上での3Dシェーダ基礎実装、C++からGLSLをcompile/linkして描画する基本的な接続、Debuggerの基本操作は完了した。残りはPost Effect / Shadowの確認を行う。
+Unity URP上での3Dシェーダ基礎実装、C++からGLSLをcompile／linkして描画する基本的な接続、Debuggerの基本操作、GLSLによるPost Effectの実装まで完了。
 
-### Post Effect / Shadow
+### Shadow Mapping（未着手）
 
-GLSLで簡単なPost Effectを確認する。
-
-- Grayscale
-- Vignette
-- Chromatic Aberration
-- Neighbor Sampling
-
-Shadow Mappingは実装を必須とせず、
+Shadow Mappingは実装を必須とせず、次の原理を理解することを今後の学習予定とする。
 
 1. Light視点からDepthを生成
 2. Camera視点の位置をLight Spaceへ変換
 3. 保存されたDepthと比較
 4. Shadow判定
-
-という原理を理解する。
